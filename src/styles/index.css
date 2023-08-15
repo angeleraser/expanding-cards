@@ -1,4 +1,4 @@
-@import url("./browser-nomalizer.min.css");
+@import url("./nomalizer.min.css");
 
 #app {
   display: flex;
@@ -49,6 +49,10 @@
   object-fit: cover;
   transition: all 1s;
   background-color: lightgray;
+}
+
+.card.card-active {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
 
 .card.card-active .card-footer {
