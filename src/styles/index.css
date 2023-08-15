@@ -1,0 +1,71 @@
+@import url("./browser-nomalizer.min.css");
+
+#app {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  padding: 20px;
+}
+
+.cards-container {
+  display: flex;
+  gap: 20px;
+  width: 90%;
+  height: 80%;
+}
+
+.card {
+  width: 100%;
+  position: relative;
+  border-radius: 25px;
+  overflow: hidden;
+  flex: 1;
+  transition: 1s all;
+  cursor: pointer;
+}
+
+.card-footer {
+  opacity: 0;
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.3);
+  display: flex;
+  align-items: center;
+  bottom: -100px;
+  padding-left: 2.5%;
+  height: 10%;
+  width: 100%;
+  color: #fff;
+  font-size: 24px;
+  transition: 1s all;
+  text-transform: capitalize;
+}
+
+.card-image {
+  width: 100%;
+  height: 100%;
+  display: inline-block;
+  object-fit: cover;
+  transition: all 1s;
+  background-color: lightgray;
+}
+
+.card.card-active .card-footer {
+  opacity: 1;
+  bottom: 0;
+}
+
+.card.card-active .card-image {
+  scale: 1.2;
+}
+
+.card:nth-child(n + 4) {
+  display: none;
+}
+
+@media screen and (min-width: 1024px) {
+  .card:nth-child(n + 1) {
+    display: flex;
+  }
+}
