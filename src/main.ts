@@ -1,49 +1,27 @@
+import { getParentNodeByClassname } from "./utils/getParentNodeByClassname";
+
 const cardsContainerEl = document.getElementById(
   "cards-container"
 ) as HTMLElement;
 
-const imageCategories = [
-  "nature",
-  "city",
-  "technology",
-  "food",
-  "still_life",
-  "abstract",
-  "wildlife",
-];
-
 cardsContainerEl.addEventListener("click", (e) => {
   const { target } = e;
   const element = target as HTMLElement;
-  const cardEl = getParentNodeByClassName(element, "card");
+  const cardEl = getParentNodeByClassname(element, "card");
 
   if (cardEl) {
-    const cardsEl = [
-      ...cardsContainerEl.querySelectorAll(".card"),
-    ] as Array<HTMLElement>;
+    const allCardsEl = Array.from<HTMLElement>(
+      cardsContainerEl.querySelectorAll(".card")
+    );
 
-    cardsEl.forEach((card) => {
-      if (card === cardEl) {
-        card.classList.add("card-active");
-        card.style.flex = `${cardsEl.length}`;
-      } else {
-        card.classList.remove("card-active");
-        card.style.flex = "1";
-      }
+    allCardsEl.forEach((card) => {
+      const isClickedCard = card === cardEl;
+
+      card.style.flex = isClickedCard ? `${allCardsEl.length}` : "1";
+      card.classList[isClickedCard ? "add" : "remove"]("card-active");
     });
   }
 });
-
-function getParentNodeByClassName(
-  element: HTMLElement,
-  className: string
-): HTMLElement | null {
-  if (!element.parentElement) return null;
-
-  return element.parentElement.classList.contains(className)
-    ? element.parentElement
-    : getParentNodeByClassName(element.parentElement, className);
-}
 
 function createCardComponent(props: {
   title: string;
@@ -51,48 +29,50 @@ function createCardComponent(props: {
 }) {
   return `
   <article class="card">
-    <img
-      loading="lazy"
-      class="card-image"
-      src="${props.img.url}"
-      alt="${props.img.alt}"
-    />
-
+    <img loading="lazy" class="card-image" src="${props.img.url}" alt="${props.img.alt}" />
     <div class="card-footer">
       <h2>${props.title}</h2>
     </div>
-</article>
+  </article>
 `;
 }
 
-async function getRandomImageByCategory(category: string) {
+async function getRandomImageByCategory(category: string): Promise<string> {
   const resp = await fetch(
     `https://random.imagecdn.app/v1/image?category=${category}&format=json`
   );
-
   const data = await resp.json();
-
-  return {
-    category: category.replace("_", " "),
-    src: data.url,
-  };
+  return data.url;
 }
 
 async function init() {
+  const imageCategories = [
+    "nature",
+    "technology",
+    "food",
+    "abstract",
+    "wildlife",
+  ];
+
   const images = await Promise.all(
     imageCategories.map((category) => {
       return getRandomImageByCategory(category);
     })
   );
 
-  const cardsComponents = images.map((img) => {
+  const cardsComponentsHtml = images.map((src, i) => {
+    const title = imageCategories[i].replace("_", " ");
     return createCardComponent({
-      title: img.category,
-      img: { url: img.src, alt: img.category },
+      title,
+      img: { url: src, alt: title },
     });
   });
 
-  cardsContainerEl.innerHTML = cardsComponents.join("");
+  cardsContainerEl.innerHTML = cardsComponentsHtml.join("");
+
+  const firstCardEl = cardsContainerEl.querySelector(".card") as HTMLElement;
+  firstCardEl?.classList.add("card-active");
+  firstCardEl.style.flex = `${cardsComponentsHtml.length}`;
 }
 
-init()
+init();
